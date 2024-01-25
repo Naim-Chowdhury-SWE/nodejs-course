@@ -2,11 +2,32 @@
 const readline = require("readline");
 const fs = require("fs");
 const http = require("http");
+const url = require("url");
 
 const html = fs.readFileSync("./Template/index.html", "utf-8");
-let products = JSON.parse(fs.readFileSync("./Data/products.json", "utf-8"));
+let product = JSON.parse(fs.readFileSync("./Data/products.json", "utf-8"));
+let productListHTML = fs.readFileSync("./Template/product-list.html", "utf-8");
+
+let productHTMLArray = product.map((prod) => {
+  let output = productListHTML.replace("{{%IMAGES%}}", prod.productImage);
+  output = output.replace("{{%NAME%}}", prod.name);
+  output = output.replace("{{%MODELNAME%}}", prod.modeName);
+  output = output.replace("{{%MODELNO%}}", prod.modelNumber);
+  output = output.replace("{{%SIZE%}}", prod.size);
+  output = output.replace("{{%CAMERA%}}", prod.camera);
+  output = output.replace("{{%PRICE%}}", prod.price);
+  output = output.replace("{{%COLOR%}}", prod.color);
+  output = output.replace("{{%ID%}}", prod.id);
+  output = output.replace("{{%ROM%}}", prod.ROM);
+  output = output.replace("{{%DESC%}}", prod.Description);
+
+  return output;
+});
+
 // STEP1: CREATE THE SERVER
 const server = http.createServer((request, response) => {
+  let { query, pathname: path } = url.parse(request.url, true);
+  console.log(x);
   let path = request.url;
 
   if (path === "/" || path.toLocaleLowerCase() === "/home") {
@@ -32,9 +53,12 @@ const server = http.createServer((request, response) => {
       )
     );
   } else if (path.toLocaleLowerCase() === "/products") {
-    response.writeHead(200, { "Content-type": "application/json" });
-    response.end("You are soon going to see our products! Stay tuned!");
-    console.log(products);
+    let productResponse = html.replace(
+      "{{%CONTENT%}}",
+      productHTMLArray.join(",")
+    );
+    response.writeHead(200, { "Content-type": "text/html" });
+    response.end(productResponse);
   } else {
     response.writeHead(404);
     response.end(html.replace("{{%CONTENT%}}", "Page not found!"));
