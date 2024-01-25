@@ -4,15 +4,48 @@ const fs = require("fs");
 const http = require("http");
 
 const html = fs.readFileSync("./Template/index.html", "utf-8");
+let products = JSON.parse(fs.readFileSync("./Data/products.json", "utf-8"));
 // STEP1: CREATE THE SERVER
 const server = http.createServer((request, response) => {
-  response.end(html);
-  console.log("A new request was made");
-  //console.log(response);
+  let path = request.url;
+
+  if (path === "/" || path.toLocaleLowerCase() === "/home") {
+    response.writeHead(200, {
+      "Content-type": "text/html",
+      "my-header": "DOPE SHIT!",
+    });
+    response.end(html.replace("{{%CONTENT%}}", "You are in the Home Page"));
+  } else if (path.toLocaleLowerCase() === "/about") {
+    response.writeHead(200);
+    response.end(
+      html.replace(
+        "{{%CONTENT%}}",
+        "You are in the About page. Learn more about us!"
+      )
+    );
+  } else if (path.toLocaleLowerCase() === "/contact") {
+    response.writeHead(200);
+    response.end(
+      html.replace(
+        "{{%CONTENT%}}",
+        "You are in the Contact page. Contact us now!"
+      )
+    );
+  } else if (path.toLocaleLowerCase() === "/products") {
+    response.writeHead(200, { "Content-type": "application/json" });
+    response.end("You are soon going to see our products! Stay tuned!");
+    console.log(products);
+  } else {
+    response.writeHead(404);
+    response.end(html.replace("{{%CONTENT%}}", "Page not found!"));
+  }
 });
 
-// STEP2: START THE SERVER
-server.listen(8000, "192.168.1.241", () => {
+/* STEP2: START THE SERVER
+192.168.1.241 if in flat
+192.168.1.99 if in house
+*/
+server.listen(8000, "192.168.1.99", () => {
   console.log("Server has started");
 });
 
