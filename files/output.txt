@@ -1,0 +1,2 @@
+Data read from input.txt: Blah Blah Blah, this is just an example. 
+Date created: Wed Jan 24 2024 00:27:48 GMT+0100 (Central European Standard Time)

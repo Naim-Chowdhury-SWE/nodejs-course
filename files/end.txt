@@ -1,0 +1,5 @@
+Blah Blah Blah, this is just an example from the input.txt file
+
+Append.txt is just appending shit everywhere
+
+Date created: Wed Jan 24 2024 00:59:22 GMT+0100 (Central European Standard Time)
