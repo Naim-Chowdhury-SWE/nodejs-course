@@ -7,28 +7,32 @@ const url = require("url");
 const html = fs.readFileSync("./Template/index.html", "utf-8");
 let product = JSON.parse(fs.readFileSync("./Data/products.json", "utf-8"));
 let productListHTML = fs.readFileSync("./Template/product-list.html", "utf-8");
+let productDetailsHTML = fs.readFileSync(
+  "./Template/product-details.html",
+  "utf-8"
+);
 
-let productHTMLArray = product.map((prod) => {
-  let output = productListHTML.replace("{{%IMAGES%}}", prod.productImage);
-  output = output.replace("{{%NAME%}}", prod.name);
-  output = output.replace("{{%MODELNAME%}}", prod.modeName);
-  output = output.replace("{{%MODELNO%}}", prod.modelNumber);
-  output = output.replace("{{%SIZE%}}", prod.size);
-  output = output.replace("{{%CAMERA%}}", prod.camera);
-  output = output.replace("{{%PRICE%}}", prod.price);
-  output = output.replace("{{%COLOR%}}", prod.color);
-  output = output.replace("{{%ID%}}", prod.id);
-  output = output.replace("{{%ROM%}}", prod.ROM);
-  output = output.replace("{{%DESC%}}", prod.Description);
+function replaceHTMLArray(template, product) {
+  let output = productListHTML.replace("{{%IMAGES%}}", product.productImage);
+  output = output.replace("{{%NAME%}}", product.name);
+  output = output.replace("{{%MODELNAME%}}", product.modeName);
+  output = output.replace("{{%MODELNO%}}", product.modelNumber);
+  output = output.replace("{{%SIZE%}}", product.size);
+  output = output.replace("{{%CAMERA%}}", product.camera);
+  output = output.replace("{{%PRICE%}}", product.price);
+  output = output.replace("{{%COLOR%}}", product.color);
+  output = output.replace("{{%ID%}}", product.id);
+  output = output.replace("{{%ROM%}}", product.ROM);
+  output = output.replace("{{%DESC%}}", product.Description);
 
   return output;
-});
+}
 
 // STEP1: CREATE THE SERVER
 const server = http.createServer((request, response) => {
   let { query, pathname: path } = url.parse(request.url, true);
-  console.log(x);
-  let path = request.url;
+  //console.log(x);
+  //let path = request.url;
 
   if (path === "/" || path.toLocaleLowerCase() === "/home") {
     response.writeHead(200, {
@@ -53,12 +57,24 @@ const server = http.createServer((request, response) => {
       )
     );
   } else if (path.toLocaleLowerCase() === "/products") {
-    let productResponse = html.replace(
-      "{{%CONTENT%}}",
-      productHTMLArray.join(",")
-    );
-    response.writeHead(200, { "Content-type": "text/html" });
-    response.end(productResponse);
+    if (!query.id) {
+      let productHTMLArray = product.map((prod) => {
+        return replaceHTMLArray(productListHTML, prod);
+      });
+      let productResponse = html.replace(
+        "{{%CONTENT%}}",
+        productHTMLArray.join(",")
+      );
+      response.writeHead(200, { "Content-type": "text/html" });
+      response.end(productResponse);
+    } else {
+      let prod = product[query.id];
+      let productDetailsResponseHTML = replaceHTMLArray(
+        productDetailsHTML,
+        prod
+      );
+      response.end(html.replace("{{%CONTENT%}}", productDetailsResponseHTML));
+    }
   } else {
     response.writeHead(404);
     response.end(html.replace("{{%CONTENT%}}", "Page not found!"));
@@ -69,7 +85,7 @@ const server = http.createServer((request, response) => {
 192.168.1.241 if in flat
 192.168.1.99 if in house
 */
-server.listen(8000, "192.168.1.99", () => {
+server.listen(8000, "192.168.1.241", () => {
   console.log("Server has started");
 });
 
