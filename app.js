@@ -236,4 +236,16 @@ myEmitter.emit("userCreated", 23, "Lee");
 });
  */
 
-console.log("Nodemon is working");
+console.log("Program has started");
+
+setTimeout(() => {
+  console.log("Timer callback excecuted");
+}, 1000);
+
+fs.readFile("./files/large-file.txt", () => {
+  console.log("File read!");
+});
+setImmediate(() => {
+  console.log("SetImmidiate callback called");
+});
+console.log("Program has completed");
