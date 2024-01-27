@@ -230,7 +230,10 @@ myEmitter.emit("userCreated", 23, "Lee");
     response.end(error.message);
   });
 }); */
-server.on("request", (request, response) => {
+/* server.on("request", (request, response) => {
   let readStream = fs.createReadStream("./files/large-file");
   readStream.pipe(response);
 });
+ */
+
+console.log("Nodemon is working");
